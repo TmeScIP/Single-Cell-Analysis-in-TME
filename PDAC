@@ -117,7 +117,16 @@ genes.zscore <- CalcStats(
 Heatmap(genes.zscore, lab_fill = "zscore")
 
 # ==============================
-# 6. GO / KEGG enrichment analysis
+# 6. DEGs
+# ==============================
+
+degs <- FindAllMarkers(mph_only, only.pos = F, min.pct = 0.25, logfc.threshold = 0.25)
+top10 <- degs %>% group_by(cluster) %>% top_n(n = 10, wt = avg_log2FC)
+mph_only <- ScaleData(mph_only, features = unique(top10$gene))
+DoHeatmap(mph_only, features = unique(top10$gene), group.by = "seurat_clusters") + scale_fill_viridis_c()
+
+# ==============================
+# 7. GO / KEGG enrichment analysis
 # ==============================
 library(circlize)
 library(ReactomePA)
